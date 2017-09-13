@@ -4,8 +4,8 @@
 
 #include <iterator>
 #include <type_traits>
-#include <python3.5/Python.h>
-#include <python3.5/structmember.h>
+#include <Python.h>
+#include <structmember.h>
 
 
 namespace py{
@@ -24,7 +24,7 @@ public:
 	using reference = py_object&;
 	using difference_type = ptrdiff_t;
 	using self_type = py_iterator;
-
+	static const py_iterator& end_sentinal();
 	py_iterator(PyObject* iterable);
 	py_iterator(PyObject* iter, PyObject* value);
 	self_type& operator++();
@@ -34,7 +34,7 @@ public:
 	bool operator !=(const py_iterator& other);
 	
 private:
-	py_iter iter_;
+	py_object iter_;
 	py_object value_;
 };
 

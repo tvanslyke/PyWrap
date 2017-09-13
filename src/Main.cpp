@@ -9,9 +9,10 @@ int main()
 	PyList_SET_ITEM(list, 2, PyLong_FromLong(4));
 	list.Print(stdout, Py_PRINT_RAW);
 	printf("\n");
-	py::py_object itm = list.CallMethod("pop", "");
+	py::py_object itm = py::steal(list.CallMethod("pop", ""));
+	py::py_object(((py::py_sequence)list).GetItem(0)).Print(stdout, Py_PRINT_RAW);
+	printf("\n");
 	itm.Print(stdout, Py_PRINT_RAW);
-
 	printf("\n");
 	return 0;
 }

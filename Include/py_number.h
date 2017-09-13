@@ -5,10 +5,11 @@
 namespace py{
 
 
-class py_number: public py_object
+class py_number: public py_object_base
 {
 public:
 	
+	using py_object_base::py_object_base;
 	inline py_new_reference Add(PyObject* other) 			{ return PyNumber_Add(self(), other); }
 	inline py_new_reference Subtract(PyObject* other) 		{ return PyNumber_Subtract(self(), other); }
 	inline py_new_reference Multiply(PyObject* other) 		{ return PyNumber_Multiply(self(), other); }

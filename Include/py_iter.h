@@ -2,11 +2,12 @@
 #define PY_ITER_CPP_H
 
 #include "py_object.h"
+
 namespace py{
-class py_iter: public py_object
+class py_iter: public py_object_base
 {
 public:
-	using py_object::py_object;
+	using py_object_base::py_object_base;
 	inline int Check()
 	{
 		return PyIter_Check(self());

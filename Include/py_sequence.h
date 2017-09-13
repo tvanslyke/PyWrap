@@ -5,10 +5,10 @@
 
 namespace py{
 
-class py_sequence: public py_object
+class py_sequence: public py_object_base
 {
 public:
-	using py_object::py_object;
+	using py_object_base::py_object_base;
 	inline py_new_reference Concat(PyObject* other) 		{ return PySequence_Concat(self(), other); }
 	inline py_new_reference Repeat(Py_ssize_t reps) 		{ return PySequence_Repeat(self(), reps); }
 	inline py_new_reference InPlaceConcat(PyObject* other) 		{ return PySequence_InPlaceConcat(self(), other); }

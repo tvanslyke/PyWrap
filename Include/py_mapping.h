@@ -8,10 +8,10 @@
 namespace py{
 
 
-class py_mapping: public py_object
+class py_mapping: public py_object_base
 {
 public:
-	using py_object::py_object;
+	using py_object_base::py_object_base;
 	
 	inline Py_ssize_t Size()	{ return PyMapping_Size(self()); }
 	inline Py_ssize_t Length()	{ return PyMapping_Length(self()); }
