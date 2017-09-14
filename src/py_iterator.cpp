@@ -2,14 +2,13 @@
 #include "py_object.h"
 #include "py_iterator.h"
 #include "py_utils.h"
+#include "py_wrap_exception.h"
 namespace py{
 
 py_iterator::py_iterator(PyObject* iterable):
 	iter_{py_object_base(iterable).GetIter()}, value_{nullptr}
 {
-	if(not iter_)
-		throw std::runtime_error("Null pointer recieved from "
-					 "call to PyObject_GetIter in py_iterator constructor.");
+	throw_if_error(iter_);
 	value_ = py_iter(iter_).Next();
 }
 py_iterator::py_iterator(PyObject* iter, PyObject* value):
