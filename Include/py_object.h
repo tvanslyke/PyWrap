@@ -5,7 +5,7 @@
 namespace py{
 
 
-class py_object: public py_object_base
+class py_object: public virtual py_object_base
 {
 public:
 	inline py_object(): py_object_base()
@@ -25,20 +25,14 @@ public:
 		xincref();	
 	}
 
-	inline py_object(PyObject* slf, bool new_reference): py_object_base(slf) 
-	{
-		if(not new_reference)
-			xincref();
-	}
-
 	inline py_object(const py_object_base& other): py_object_base(other)
 	{
 		xincref();
 	}
 	inline py_object(py_object_base&& other): py_object_base(std::move(other))
 	{
-		// redundant, but may refactor py_object_base in future to not do this for you...
-		other.self() = nullptr;
+		if(&other != static_cast<const py_object_base*>(this))
+			other.self() = nullptr;
 	}
 	inline py_object(const py_object& other)
 	{
@@ -85,6 +79,15 @@ public:
 		other.self() = nullptr;
 		tmp.xdecref();
 		return *this;
+	}
+
+	inline py_object& operator=(PyObject* other)
+	{
+		return ((*this) = py_object_base(other));
+	}
+	inline py_object& operator=(std::nullptr_t)
+	{
+		return ((*this) = ((PyObject*)nullptr));
 	}
 };
 

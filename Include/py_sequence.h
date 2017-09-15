@@ -2,10 +2,10 @@
 #define PY_SEQUENCE_CPP_H
 
 #include "py_object.h"
-
+#include "py_wrap_exception.h"
 namespace py{
 
-class py_sequence: public py_object_base
+class py_sequence: public virtual py_object_base
 {
 public:
 	using py_object_base::py_object_base;
@@ -56,7 +56,7 @@ public:
 	{ 
 		return PySequence_ITEM(self(), idx); 
 	}
-	inline Py_ssize_t Fast_GET_SIZE()
+	inline Py_ssize_t Fast_GET_SIZE() 
 	{
 		return PySequence_Fast_GET_SIZE(self());
 	}	
@@ -64,6 +64,34 @@ public:
 };
 
 
+class py_fast_sequence: public py_sequence
+{
+public:
+	using iterator = PyObject**;
+	using reverse_iterator = std::reverse_iterator<iterator>;
+
+	
+	inline py_fast_sequence(py_object slf): 
+		py_object_base(py_sequence(slf).Fast("[INTERNAL PYWRAP ERROR] Attempt to construct "
+					             "py_fast_sequence object from object other than list or tuple."))
+	{
+		if(not self())
+		{
+			throw py_exception();
+		}
+	}
+
+
+	inline iterator begin()       			{ return Fast_ITEMS(); }
+	inline reverse_iterator rbegin()     		{ return std::make_reverse_iterator(end()); }
+	
+
+
+	inline iterator end()       		    { return begin() + Fast_GET_SIZE(); }
+	inline reverse_iterator rend()     	    { return std::make_reverse_iterator(begin()); }
+
+
+};
 
 } /* namespace py */
 

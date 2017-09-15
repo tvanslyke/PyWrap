@@ -5,7 +5,7 @@
 namespace py{
 
 
-class py_number: public py_object_base
+class py_number: public virtual py_object_base
 {
 public:
 	

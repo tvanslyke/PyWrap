@@ -46,39 +46,18 @@ public:
 		
 	}
 
-
-	inline py_object_base(const py_object_base& other)
-	{
-		self_ = other.self_;
-	}
-
-	inline py_object_base(py_object_base&& other)
-	{
-		self_ = other.self_;
-		other.self_ = nullptr;
-	}
 	virtual ~py_object_base() = default;
 	
-	virtual inline py_object_base& operator=(const py_object_base& other)
-	{
-		self_ = other.self_;
-		return *this;
-	}
-	virtual inline py_object_base& operator=(py_object_base&& other)
-	{
-		self_ = other.self_;
-		other.self_ = nullptr;
-		return *this;
-	}
 	inline PyObject* get(){ return self_; }
 	virtual inline operator PyObject*()
 	{
 		return self_;
 	}
+
 	template <class T>
 	operator T*()
 	{
-		static_assert(is_py_object_v<std::remove_cv_t<T>>, "Cannot convert PyObject* to non PyObject.");
+		static_assert(is_py_object_v<std::remove_cv_t<T>>, "Cannot convert PyObject* to non PyObject type.");
 		return (T*)self_;
 	}
 	inline operator bool() const
@@ -318,8 +297,12 @@ struct py_new_reference: public py_object_base
 	{
 		xdecref();
 	}
+	py_new_reference(py_new_reference&& obj):
+		py_object_base(obj.release())
+	{
+		
+	}
 	py_new_reference(const py_new_reference&) 		= delete;
-	py_new_reference(py_new_reference&&) 			= delete;
 	py_new_reference& operator=(const py_new_reference&) 	= delete;
 	py_new_reference& operator=(py_new_reference&&) 	= delete;
 	
@@ -339,25 +322,25 @@ struct py_new_reference: public py_object_base
 template <class ... T>	
 py_new_reference py_object_base::CallFunction(const char* format, T && ... args)
 {
-	return PyObject_CallFunction(self_, format, std::forward<T>(args)...);
+	return PyObject_CallFunction(self_, format, static_cast<PyObject*>(std::forward<T>(args))...);
 }
 
 template <class ... T>	
 py_new_reference py_object_base::CallMethod(const char* method, const char* format, T && ... args)
 {
-	return PyObject_CallMethod(self_, method, format, std::forward<T>(args)...);
+	return PyObject_CallMethod(self_, method, format, static_cast<PyObject*>(std::forward<T>(args))...);
 }
 
 template <class ... T>	
 py_new_reference py_object_base::CallFunctionObjArgs(T && ... args)
 {
-	return PyObject_CallFunctionObjArgs(self_, std::forward<T>(args)..., NULL);
+	return PyObject_CallFunctionObjArgs(self_, static_cast<PyObject*>(std::forward<T>(args))..., NULL);
 }
 
 template <class ... T>	
 py_new_reference py_object_base::CallMethodObjArgs(PyObject* method, T && ... args)
 {
-	return PyObject_CallMethodObjArgs(self_, method, std::forward<T>(args)..., NULL);
+	return PyObject_CallMethodObjArgs(self_, method, (PyObject*)(std::forward<T>(args))..., NULL);
 }
 
 

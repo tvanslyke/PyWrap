@@ -8,7 +8,7 @@
 namespace py{
 
 
-class py_mapping: public py_object_base
+class py_mapping: public virtual py_object_base
 {
 public:
 	using py_object_base::py_object_base;
